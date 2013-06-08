@@ -7,6 +7,7 @@ html
     script(type='text/javascript', src='/javascripts/vendor/zepto.js')
     script(type='text/javascript', src='/javascripts/foundation/foundation.js')
     script(type='text/javascript', src='/javascripts/foundation/foundation.topbar.js')
+    script(type='text/javascript', src='/javascripts/foundation/foundation.section.js')
     script(type='text/javascript', src='/javascripts/vendor/custom.modernizr.js')
     script(type='text/javascript', src='//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js')
   body(ng-app="discuss")
@@ -31,13 +32,16 @@ html
                   li(ng-repeat='forum in forums')
                     a {{forum.name}}
               li.divider
-
     .row
-      .large-4.columns
-        | Hello
-      .large-8.columns
-        | Goodbye
-    block content
+      .large-3.columns
+        .section-container(data-section='vertical-nav', ng-controller='SideNavCtrl')
+          section: p.title(data-section-title): a(href='#') Test
+          section(ng-repeat='item in menuItems'): p.title(data-section-title): a(href='#') {{item.title}}
+      .large-9.columns
+        block content
+    script(type='text/javascript', src='/javascripts/initApp.js')
+    script(type='text/javascript', src='/javascripts/controllers/topNav.js')
+    script(type='text/javascript', src='/javascripts/controllers/sideNav.js')
     block endScripts
     script(type='text/javascript')
         $(document).foundation();

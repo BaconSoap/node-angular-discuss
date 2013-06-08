@@ -1,10 +1,4 @@
-var app = angular.module('discuss', []);
-
-app.controller('TopNavCtrl', function($scope){
-    $scope.forums = [
-        {name:'Main'}
-    ]
-})
+var app = angular.module('discuss');
 
 app.directive("superhero", function(){
     return {

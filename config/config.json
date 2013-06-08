@@ -1,0 +1,10 @@
+{
+    "domain":"localhost",
+    "port":"3000",
+    "mysql":{
+        "address":"localhost",
+        "port":"3306",
+        "user":"discussUser",
+        "password":"niceTry"
+    }
+}

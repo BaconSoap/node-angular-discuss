@@ -1,7 +1,10 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .row: .large-12.columns: h1= title
+  .row
+    .large-3.columns: superhero(flight, speed, strength) superman
+    .large-3.columns: superhero(speed) flash
+    .large-6.columns
 block endScripts
   script(type='text/javascript', src='/javascripts/index.js')

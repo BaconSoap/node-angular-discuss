@@ -2,6 +2,42 @@ doctype 5
 html
   head
     title= title
+    link(rel='stylesheet', href='/stylesheets/foundation.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
-  body
+    script(type='text/javascript', src='/javascripts/vendor/zepto.js')
+    script(type='text/javascript', src='/javascripts/foundation/foundation.js')
+    script(type='text/javascript', src='/javascripts/foundation/foundation.topbar.js')
+    script(type='text/javascript', src='/javascripts/vendor/custom.modernizr.js')
+    script(type='text/javascript', src='//ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js')
+  body(ng-app="discuss")
+    .row
+      .large-12.columns
+        nav.top-bar(ng-controller='TopNavCtrl')
+          ul.title-area
+            li.name
+              h1
+                a Angular Discussion
+            li.toggle-topbar.menu-icon
+              a
+                span menu
+          section.top-bar-section
+            ul.left
+              li.divider
+              li.has-dropdown
+                a(href='#') Forums
+                ul.dropdown
+                  li
+                    label level 1
+                  li(ng-repeat='forum in forums')
+                    a {{forum.name}}
+              li.divider
+
+    .row
+      .large-4.columns
+        | Hello
+      .large-8.columns
+        | Goodbye
     block content
+    block endScripts
+    script(type='text/javascript')
+        $(document).foundation();

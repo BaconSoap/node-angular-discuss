@@ -9,6 +9,8 @@ var express = require('express')
   , http = require('http')
   , path = require('path');
 
+var config = require('./config');
+
 var app = express();
 
 // all environments

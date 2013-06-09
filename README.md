@@ -9,9 +9,7 @@ install
 =======
 
 * navigate to root dir
-* copy config/config.json to config/development.json
-* modify the new config file for your settings
-* from root dir, run "node setup/migrate.js development"
+* run "node setup/setupNew.js" and follow prompts (configures config/development.json)
 * run "node discuss_app.js development"
 * navigate to localhost:[port] (from your new config file)
 

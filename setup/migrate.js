@@ -57,7 +57,7 @@ var files = fs.readdirSync(path.resolve(__dirname, 'migrations/'));
 db.executeScalar("SELECT COUNT(*) FROM Information_Schema.tables WHERE TABLE_NAME='Migrations';", function(err,count){
     if (parseInt(count,10) === 1){
         console.log('schema exists, resuming migrations');
-        db.executeScalar("USE Discuss; SELECT Name FROM Migrations ORDER BY DateRun DESC LIMIT 1;", function(err, fileName){
+        db.executeScalar("USE Discuss; SELECT Name FROM Migrations ORDER BY MigrationID DESC LIMIT 1;", function(err, fileName){
             console.info('the latest migration run is ' + fileName);
             var starting = files.indexOf(fileName) + 1;
             startProcessing(starting);

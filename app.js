@@ -10,11 +10,18 @@ var express = require('express')
   , path = require('path');
 
 var config = require('./config');
+var db = require('./db');
+
+db.executeScalar("SELECT 'A winner is you!' AS message", function(err,data){
+    if (err)
+        console.log("connection error! " + err);
+    console.log(data);
+});
 
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', config.port || process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());

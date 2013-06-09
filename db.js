@@ -28,7 +28,9 @@ var execute = function(query, arg1, arg2) {
     pool.getConnection(function(err,conn){
         if (err){
             callback(err);
-            conn.end();
+            if (conn){
+                conn.end();
+            }
             return;
         }
         conn.query(query, args, function(err,rows){

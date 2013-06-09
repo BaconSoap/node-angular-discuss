@@ -13,6 +13,7 @@
     "config.json": "*",
     "underscore":"*",
     "optimist":"*",
-    "log4js":"*"
+    "log4js":"*",
+    "squel" : "*"
   }
 }

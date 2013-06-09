@@ -43,7 +43,7 @@ var processSql = function(fileName){
     console.log('running ' + filePath);
 
     var sqlCommand = fs.readFileSync(filePath).toString();
-    db.execute(sqlCommand, function(err,result){
+    db.execute(sqlCommand, false, function(err,result){
         if (err){
             console.error("WHOA MIGRATION PROBLEM: " + err);
             process.exit();
@@ -66,7 +66,8 @@ var processSql = function(fileName){
  * @param callback
  */
 function migrate(fileName, callback){
-    db.execute("USE Discuss; INSERT INTO Migrations (Name) VALUE (?)", fileName, callback);
+    var createMigrationRecord = db.insertInto('Migrations').set('Name', fileName);
+    db.execute(createMigrationRecord, fileName, callback);
 }
 
 var queue = new Queue(processSql);
@@ -74,12 +75,13 @@ var queue = new Queue(processSql);
 var files = fs.readdirSync(path.resolve(__dirname, 'migrations/'));
 
 //Start the process by seeing if the schema even exists yet
-db.executeScalar("SELECT COUNT(*) FROM Information_Schema.tables WHERE TABLE_NAME='Migrations';", function(err,count){
+var checkSchemaExists = db.from('INFORMATION_SCHEMA.Tables').field("COUNT(*)").where("TABLE_NAME=?", 'Migrations');
+db.executeScalar(checkSchemaExists, false, function(err,count){
 
     //if it does, pick up with the next migration
     if (parseInt(count,10) === 1){
         console.log('schema exists, resuming migrations');
-        db.executeScalar("USE Discuss; SELECT Name FROM Migrations ORDER BY MigrationID DESC LIMIT 1;", function(err, fileName){
+        db.executeScalar("SELECT Name FROM Migrations ORDER BY MigrationID DESC LIMIT 1;", function(err, fileName){
             console.info('the latest migration run is ' + fileName);
             var starting = files.indexOf(fileName) + 1;
             startProcessing(starting);

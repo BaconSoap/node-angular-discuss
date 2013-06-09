@@ -12,12 +12,6 @@ var express = require('express')
 var config = require('./config');
 var db = require('./db');
 
-db.executeScalar("SELECT 'A winner is you!' AS message", function(err,data){
-    if (err)
-        console.log("connection error! " + err);
-    console.log(data);
-});
-
 var app = express();
 
 // all environments

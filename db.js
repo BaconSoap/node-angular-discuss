@@ -1,5 +1,9 @@
 var mysql = require('mysql');
 var config = require('./config');
+var logger = require('log4js');
+var squel = require('squel');
+
+logger.replaceConsole();
 
 var pool = mysql.createPool({
     host: config.mysql.address,
@@ -8,22 +12,34 @@ var pool = mysql.createPool({
     multipleStatements: true
 });
 
+var from = function(table, tableAlias){
+    return squel.select().from(table, tableAlias);
+}
+
+var insertInto = function(table){
+    return squel.insert().into(table);
+}
+
 /**
- * Execute a query, optionally using parameterized variables ('?')
+ * Execute a query
  * @param query The query to execute
- * @param arg1 Either an array of variables to parameterize or the callback
+ * @param arg1 Either a bool (whether to use Discuss DB) or the callback
  * @param arg2 The callback if arg1 isn't
  */
 var execute = function(query, arg1, arg2) {
-    var args, callback;
+    var useDiscuss, callback;
+    query = query.toString();
 
-    //set parameterization and the callback
     if (typeof arg2 === 'undefined'){
-        args = [];
+        useDiscuss = true;
         callback = arg1;
     } else {
-        args = arg1;
+        useDiscuss = arg1;
         callback = arg2;
+    }
+
+    if (useDiscuss){
+        query = 'USE Discuss; \r\n' + query;
     }
 
     pool.getConnection(function(err,conn){
@@ -34,7 +50,7 @@ var execute = function(query, arg1, arg2) {
             }
             return;
         }
-        conn.query(query, args, function(err,rows){
+        conn.query(query, function(err,rows){
             conn.end();
             if (err){
                 callback(err);
@@ -51,8 +67,19 @@ var execute = function(query, arg1, arg2) {
  * @param query
  * @param callback
  */
-var executeScalar = function(query, callback){
-    execute(query, function(err, rows) {
+var executeScalar = function(query, arg1, arg2){
+
+    var useDiscuss, callback;
+
+    if (typeof arg2 === 'undefined'){
+        useDiscuss = true;
+        callback = arg1;
+    } else {
+        useDiscuss = arg1;
+        callback = arg2;
+    }
+
+    execute(query, useDiscuss, function(err, rows) {
         if (err){
             callback(err);
             return;
@@ -76,6 +103,11 @@ var executeScalar = function(query, callback){
     });
 };
 
-var visible = {execute:execute, executeScalar:executeScalar};
+var visible = {
+    execute:execute,
+    executeScalar:executeScalar,
+    from: from,
+    insertInto: insertInto
+};
 
 module.exports = visible;

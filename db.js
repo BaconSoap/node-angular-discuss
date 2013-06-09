@@ -47,7 +47,7 @@ var execute = function(query, arg1, arg2) {
 };
 
 /**
- *
+ * Take the first value in the last row of the result set returned by the query
  * @param query
  * @param callback
  */

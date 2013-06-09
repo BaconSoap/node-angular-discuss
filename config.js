@@ -6,6 +6,10 @@ var environment = 'development';
 if (typeof args[0] !== 'undefined'){
     environment = args[0];
 }
-var config = JSON.parse(fs.readFileSync("./config/" + environment + ".json"));
+var filePath = "./config/" + environment + ".json";
+if (!fs.exists(filePath)){
+    filePath = "./config/config.json";
+}
+var config = JSON.parse(fs.readFileSync(filePath));
 
 module.exports = config;

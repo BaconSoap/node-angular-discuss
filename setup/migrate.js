@@ -39,14 +39,19 @@ function Queue(processor){
  * @param fileName The filename of the SQL statements to be run
  */
 var processSql = function(fileName){
+
     var filePath = path.resolve(__dirname, 'migrations/', fileName)
     console.log('running ' + filePath);
 
+    //Get the SQL to run
     var sqlCommand = fs.readFileSync(filePath).toString();
+
+    //Try to run the migration
     db.execute(sqlCommand, false, function(err,result){
         if (err){
             console.error("WHOA MIGRATION PROBLEM: " + err);
             process.exit();
+            return;
         }
 
         console.log("migration " + fileName + " success");
@@ -93,6 +98,10 @@ db.executeScalar(checkSchemaExists, false, function(err,count){
     }
 })
 
+/**
+ * Begin the processing of the migrations starting with the specifed one
+ * @param startingIndex
+ */
 function startProcessing(startingIndex){
     for (var file = startingIndex; file < files.length; file++){
         queue.enqueue(files[file]);

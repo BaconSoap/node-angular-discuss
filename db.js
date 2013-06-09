@@ -115,6 +115,11 @@ var executeScalar = function(query, arg1, arg2){
     });
 };
 
+/**
+ * Create a prototype function from the specified Column-Property map
+ * @param colToPropMap a map from DB columns/selects to JS properties
+ * @returns {Function} Calling this will make an empty object with the structure specified
+ */
 function createPrototype(colToPropMap){
     return function(){
         var obj = {};
@@ -127,7 +132,11 @@ function createPrototype(colToPropMap){
     };
 }
 
-
+/**
+ * Add the columns from the specified Column-Property map to the query using 'field'
+ * @param query
+ * @param propToColMap
+ */
 function addCols(query, propToColMap){
     for(var p in propToColMap){
         if (propToColMap.hasOwnProperty(p)){
@@ -136,6 +145,12 @@ function addCols(query, propToColMap){
     }
 }
 
+/**
+ * Creates a JS object with the structure specified by the prototype function and the data from the row
+ * @param prototype A function that, when called, yields the structure to populate from the row
+ * @param row The data row
+ * @returns {*}
+ */
 function createObjFromDbRow(prototype, row){
     var obj = prototype();
     for(var i in row){

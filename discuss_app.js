@@ -32,7 +32,15 @@ if ('development' == app.get('env')) {
 
 require('./routes/router').init(app);
 
-
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
-});
+db.executeScalar(db.from("Boards").field("COUNT(*)"), function(err, result){
+    if (err){
+        console.error(err);
+        console.error('shutting down');
+        process.exit(1);
+        return;
+    }
+    console.log("initialized database. " + result + " Boards present.")
+    http.createServer(app).listen(app.get('port'), function(){
+        console.log('Express server listening on port ' + app.get('port'));
+    });
+})

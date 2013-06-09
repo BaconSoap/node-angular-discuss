@@ -12,6 +12,7 @@
     "mysql": "2.0.0-alpha8",
     "config.json": "*",
     "underscore":"*",
-    "optimist":"*"
+    "optimist":"*",
+    "log4js":"*"
   }
 }

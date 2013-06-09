@@ -4,7 +4,8 @@ var config = require('./config');
 var pool = mysql.createPool({
     host: config.mysql.address,
     user: config.mysql.user,
-    password: config.mysql.password
+    password: config.mysql.password,
+    multipleStatements: true
 });
 
 /**
@@ -57,10 +58,18 @@ var executeScalar = function(query, callback){
             return;
         }
         var first;
-        for(var i in rows[0]){
-            if(rows[0].hasOwnProperty(i)){
-                first = rows[0][i];
+        for(var i in rows[rows.length-1]){
+            if(rows[rows.length-1].hasOwnProperty(i)){
+                first = rows[rows.length-1][i];
                 break;
+            }
+        }
+        if (typeof first === 'object'){
+            for(var i in first){
+                if (first.hasOwnProperty(i)){
+                    first = first[i];
+                    break;
+                }
             }
         }
         callback(null, first);

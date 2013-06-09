@@ -1,4 +1,5 @@
 var index = require('../controllers/index');
+var boards = require('../controllers/BoardController');
 
 function initRoutes(app){
     initHome(app);
@@ -10,7 +11,7 @@ function initHome(app){
 }
 
 function initBoards(app){
-
+    app.get('/boards', boards.getAll);
 }
 
 module.exports.init = initRoutes;

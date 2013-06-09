@@ -115,13 +115,40 @@ var executeScalar = function(query, arg1, arg2){
     });
 };
 
-var visible = {
-    execute:execute,
-    executeScalar:executeScalar,
-    from: from,
-    insertInto: insertInto
-};
+function createPrototype(colToPropMap){
+    return function(){
+        var obj = {};
+        for(var i in colToPropMap){
+            if (colToPropMap.hasOwnProperty(i)){
+                obj[colToPropMap[i]] = null;
+            }
+        }
+        return obj;
+    };
+}
 
+
+function addCols(query, propToColMap){
+    for(var p in propToColMap){
+        if (propToColMap.hasOwnProperty(p)){
+            query.field(p, propToColMap[p]);
+        }
+    }
+}
+
+function createObjFromDbRow(prototype, row){
+    var obj = prototype();
+    for(var i in row){
+        if(row.hasOwnProperty(i) && obj.hasOwnProperty(i)){
+            obj[i] = row[i];
+        }
+    }
+    return obj;
+}
+
+exports.createPrototype = createPrototype;
+exports.addCols = addCols;
+exports.createObjFromDbRow = createObjFromDbRow;
 exports.execute = execute;
 exports.executeScalar = executeScalar;
 exports.from = from;

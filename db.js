@@ -120,4 +120,7 @@ var visible = {
     insertInto: insertInto
 };
 
-module.exports = visible;
+exports.execute = execute;
+exports.executeScalar = executeScalar;
+exports.from = from;
+exports.insertInto = insertInto;

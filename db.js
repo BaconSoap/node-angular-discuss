@@ -26,8 +26,8 @@ var insertInto = function(table){
 /**
  * Execute a query
  * @param query The query to execute
- * @param arg1 Either a bool (whether to use Discuss DB) or the callback
- * @param arg2 The callback if arg1 isn't
+ * @param {object} [arg1] Either a bool (whether to use Discuss DB) or the callback
+ * @param {function} [arg2] The callback if arg1 isn't
  */
 var execute = function(query, arg1, arg2) {
     var useDiscuss, callback;
@@ -61,7 +61,9 @@ var execute = function(query, arg1, arg2) {
                 callback(err);
                 return;
             }
-
+            if(useDiscuss){
+                rows = rows.slice(1)[0];
+            }
             callback(null, rows);
         })
     })

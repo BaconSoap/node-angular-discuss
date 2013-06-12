@@ -1,0 +1,1 @@
+supervisor -w "./,public/,controllers/,routes/,models/" -- discuss_app.js development

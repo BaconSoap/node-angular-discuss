@@ -1,5 +1,17 @@
 var app = angular.module('discuss');
 
+app.factory('boardService', function($http){
+   return {
+       getAll: function(){
+           var promise = $http.get('boards').then(function(response){
+              console.log(response);
+               return response.data;
+           });
+           return promise;
+       }
+   };
+});
+
 app.directive("superhero", function(){
     return {
         restrict: 'E',

@@ -1,9 +1,17 @@
 USE Discuss;
 
+CREATE TABLE Topics (
+  TopicID INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  BoardID INT NOT NULL,
+  Title VARCHAR(100) NOT NULL,
+  DateCreated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(BoardID) REFERENCES Boards(BoardID)
+);
+
 CREATE TABLE Posts (
   PostID INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  BoardID INT NOT NULL,
-  FOREIGN KEY(BoardID) REFERENCES Boards(BoardID)
+  TopicID INT NOT NULL,
+  FOREIGN KEY(TopicID) REFERENCES Topics(TopicID)
 );
 
 CREATE TABLE Users (
@@ -21,7 +29,6 @@ CREATE TABLE PostsVersions (
   Version INT NOT NULL,
   AuthorID INT NOT NULL,
   DateCreated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PostTitle VARCHAR(100) NOT NULL,
   PostContent TEXT NOT NULL,
   DateDeleted TIMESTAMP,
   DeletedBy INT,
@@ -30,3 +37,16 @@ CREATE TABLE PostsVersions (
   FOREIGN KEY(PostID) REFERENCES Posts(PostID),
   FOREIGN KEY(AuthorID) REFERENCES Users(UserID)
 );
+
+CREATE TRIGGER PostsVersions_Increment_Version
+  BEFORE INSERT
+  ON PostsVersions
+  FOR EACH ROW
+BEGIN
+    SET @id1 = NULL;
+
+    IF NEW.Version = -1 THEN
+      SELECT COALESCE(MAX(Version) + 1, 1) INTO @id1 FROM PostsVersions WHERE PostsVersions.PostID = NEW.PostID;
+      SET NEW.Version = @id1;
+    END IF;
+END

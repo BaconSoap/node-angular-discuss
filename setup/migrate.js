@@ -2,10 +2,14 @@ var db = require('../db');
 var fs = require('fs');
 var path = require('path');
 var logger = require('log4js');
+var env = require('optimist').argv._[1];
+var isSeed = (typeof env !== 'undefined'? env: 'migrations').toLowerCase() === "seed";
+var folder = isSeed? 'seeddata/' : 'migrations/';
 
 logger.replaceConsole();
 
 console.log('beginning migrations');
+var queue;
 
 /**
  * Create a queue with a processing function. Exits when queue is all processed.
@@ -19,17 +23,17 @@ function Queue(processor){
 
     var enqueue = function(val){
         queued.push(val);
-    }
+    };
 
     var act = function(){
         var item = queued[index++];
         if (typeof item === 'undefined'){
-            console.log('migrations complete')
+            console.log('migrations complete');
             process.exit();
             return;
         }
         processor(item);
-    }
+    };
 
     return {enqueue: enqueue, act: act};
 }
@@ -40,7 +44,7 @@ function Queue(processor){
  */
 var processSql = function(fileName){
 
-    var filePath = path.resolve(__dirname, 'migrations/', fileName)
+    var filePath = path.resolve(__dirname, folder, fileName);
     console.log('running ' + filePath);
 
     //Get the SQL to run
@@ -57,11 +61,17 @@ var processSql = function(fileName){
         console.log("migration " + fileName + " success");
 
         //create a migration record and then go on to the next SQL file
-        migrate(fileName, function(){
+        if (isSeed){
             process.nextTick(function(){
                 queue.act();
-            })
-        });
+            });
+        } else {
+            migrate(fileName, function(){
+                process.nextTick(function(){
+                    queue.act();
+                })
+            });
+        }
     })
 }
 
@@ -75,12 +85,18 @@ function migrate(fileName, callback){
     db.execute(createMigrationRecord, fileName, callback);
 }
 
-var queue = new Queue(processSql);
+queue = new Queue(processSql);
 
-var files = fs.readdirSync(path.resolve(__dirname, 'migrations/'));
+var files = fs.readdirSync(path.resolve(__dirname, folder));
+
+if (isSeed){
+    startProcessing(0);
+    return;
+}
 
 //Start the process by seeing if the schema even exists yet
 var checkSchemaExists = db.from('INFORMATION_SCHEMA.Tables').field("COUNT(*)").where("TABLE_NAME=?", 'Migrations');
+
 db.executeScalar(checkSchemaExists, false, function(err,count){
 
     //if it does, pick up with the next migration
@@ -96,7 +112,7 @@ db.executeScalar(checkSchemaExists, false, function(err,count){
         console.log('schema doesn\'t exist, beginning migrations');
         startProcessing(0);
     }
-})
+});
 
 /**
  * Begin the processing of the migrations starting with the specifed one
